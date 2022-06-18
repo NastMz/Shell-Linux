@@ -5,6 +5,7 @@
 package com.osproject.shell.server;
 
 import com.osproject.shell.server.core.Auth;
+import com.osproject.shell.server.core.ClientShellThread;
 import com.osproject.shell.server.utils.ConsoleColors;
 
 import java.io.DataInputStream;
@@ -30,7 +31,7 @@ public class ShellServer {
             Logger.getLogger(ShellServer.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.RED + "Socket creation failed" + ConsoleColors.RESET);
         }
-        Socket socket;
+        Socket socket = null;
 
         DataInputStream dataInputStream;
         DataOutputStream dataOutputStream;
@@ -40,8 +41,6 @@ public class ShellServer {
 
         while (true) {
             try {
-
-                boolean login = false;
 
                 System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.CYAN + "Waiting for connections..." + ConsoleColors.RESET);
 
@@ -53,27 +52,14 @@ public class ShellServer {
 
                 System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.YELLOW + "New connection request from " + ConsoleColors.WHITE + socket.getInetAddress() + ConsoleColors.RESET);
 
-                request = dataInputStream.readUTF();
-
-                login = new Auth().auth(request);
-
-                dataOutputStream.writeBoolean(login);
-
-                if (!login) {
-                    System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.RED + "Connection request from " + ConsoleColors.WHITE + socket.getInetAddress() + ConsoleColors.RED + " denied" + ConsoleColors.RESET);
-                }
-
-                socket.close();
-
-                if (login) {
-
-                    //ServidorHilo hilo = new ServidorHilo(fEntrada, fSalida);
-                    //hilo.start();
-                    System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.GREEN + "Connection request from " + ConsoleColors.WHITE + socket.getInetAddress() + ConsoleColors.GREEN + " accepted" + ConsoleColors.RESET);
-
-                }
+                new ClientShellThread(socket, dataInputStream, dataOutputStream).start();
 
             } catch (IOException ex) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    Logger.getLogger(ShellServer.class.getName()).log(Level.SEVERE, null, e);
+                }
                 Logger.getLogger(ShellServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
