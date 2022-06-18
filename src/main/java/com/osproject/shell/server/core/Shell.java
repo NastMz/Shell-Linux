@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class Shell {
 
-    public String shell(String command) {
+    public String execute(String command) {
 
         StringBuilder response = new StringBuilder();
 

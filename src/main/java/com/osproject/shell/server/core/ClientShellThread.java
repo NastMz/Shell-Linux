@@ -26,6 +26,7 @@ public class ClientShellThread extends Thread{
     public void run() {
         String[] request;
         boolean exit = false;
+        Shell shell = new Shell();
         while(!exit) {
             try {
                 request = dataInputStream.readUTF().split("::");
@@ -46,8 +47,10 @@ public class ClientShellThread extends Thread{
                             System.out.println(ConsoleColors.BLUE + "server@linux~$ " + ConsoleColors.GREEN + "Connection request from " + ConsoleColors.WHITE + socket.getInetAddress() + ConsoleColors.GREEN + " accepted" + ConsoleColors.RESET);
                         }
                     }
-                    case "2" -> dataOutputStream.writeUTF(new Shell().shell(request[1]));
-                    case "3" -> dataOutputStream.writeUTF("");
+                    case "2" -> dataOutputStream.writeUTF(shell.execute(request[1]));
+                    case "3" -> dataOutputStream.writeUTF(shell.execute("free -m"));
+                    case "4" -> dataOutputStream.writeUTF(shell.execute("df -h"));
+                    case "5" -> dataOutputStream.writeUTF(shell.execute("top -b -n 1"));
                 }
 
             } catch (IOException ex) {
