@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ShellServer" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.osproject.shell.server.ShellServer" />
+    <module name="shell-server" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
