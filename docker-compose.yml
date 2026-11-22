@@ -1,0 +1,20 @@
+# Run with:  SHELL_PASSWORD=change-me docker compose up -d --build
+# Add more accounts later:  docker compose run --rm shell-server useradd bob
+services:
+  shell-server:
+    build: .
+    image: shell-server:1.0.0
+    ports:
+      - "2704:2704"
+    environment:
+      SHELL_USER: ${SHELL_USER:-admin}
+      SHELL_PASSWORD: ${SHELL_PASSWORD:?Set SHELL_PASSWORD to create the first account}
+    volumes:
+      - shell-data:/data
+    # Uncomment to monitor (and kill) the host's processes instead of only the container's.
+    # The shell still runs inside the container as the unprivileged "shell" user.
+    # pid: host
+    restart: unless-stopped
+
+volumes:
+  shell-data:
